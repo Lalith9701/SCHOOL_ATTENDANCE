@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Scanner</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- QR Scanner Library -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+    body {
+        background: linear-gradient(135deg, #a8edea, #fed6e3); /* soft aqua → pink */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        overflow: hidden;
+    }
+
+    /* Floating light particles */
+    body::before {
+        content: "";
+        position: absolute;
+        width: 180%;
+        height: 180%;
+        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 60%);
+        animation: float 12s infinite linear;
+    }
+    @keyframes float {
+        0% { transform: translateY(0) rotate(0); }
+        50% { transform: translateY(-40px) rotate(10deg); }
+        100% { transform: translateY(0) rotate(0); }
+    }
+
+    .scanner-container {
+        background: rgba(255,255,255,0.9);
+        padding: 40px;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        text-align: center;
+        max-width: 480px;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+    }
+
+    h2 {
+        color: #4a47a3;
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
+    #reader {
+        width: 100%;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 15px;
+        border: 3px solid #a1c4fd; /* soft blue border */
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+
+    #status, #error {
+        padding: 12px;
+        border-radius: 10px;
+        font-weight: 600;
+        margin: 10px 0;
+        display: none;
+        transition: all 0.3s ease;
+    }
+
+    #status { background-color: #d7f9ed; color: #0b6e4f; border: 1px solid #b3f0da; }
+    #error { background-color: #ffe2e6; color: #a94442; border: 1px solid #f5b7b7; }
+
+    button {
+        padding: 12px 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 30px;
+        background: linear-gradient(135deg, #84fab0, #8fd3f4);
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, #63e6be, #74c0fc);
+    }
+
+    @media(max-width: 600px) {
+        .scanner-container { padding: 25px; }
+        h2 { font-size: 1.4rem; }
+        button { padding: 10px 20px; font-size: 0.9rem; }
+    }
+</style>
+</head>
+<body>
+
+<div class="scanner-container">
+    <h2>📷 Scan Student QR Code</h2>
+    <div id="reader"></div>
+    <div id="status"></div>
+    <div id="error"></div>
+    <button onclick="restartScanner()">🔄 Restart Scanner</button>
+</div>
+
+<script>
+    const statusDiv = document.getElementById('status');
+    const errorDiv = document.getElementById('error');
+    let html5QrcodeScanner;
+
+    function markAttendance(studentQr) {
+        const token = localStorage.getItem('access_token');
+        if (!token) {
+            errorDiv.innerText = "⚠ You must be logged in!";
+            errorDiv.style.display = "block";
+            statusDiv.style.display = "none";
+            return;
+        }
+
+        fetch('/api/mark-attendance/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ qr_code: studentQr, status: "P" })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.id) {
+                statusDiv.innerText = `✅ Attendance marked for QR: ${studentQr}`;
+                statusDiv.style.display = "block";
+                errorDiv.style.display = "none";
+            } else {
+                errorDiv.innerText = JSON.stringify(data);
+                errorDiv.style.display = "block";
+                statusDiv.style.display = "none";
+            }
+        })
+        .catch(err => {
+            errorDiv.innerText = `Error: ${err}`;
+            errorDiv.style.display = "block";
+            statusDiv.style.display = "none";
+        });
+    }
+
+    function onScanSuccess(decodedText) { markAttendance(decodedText); }
+
+    function startScanner() {
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess);
+    }
+
+    function restartScanner() {
+        html5QrcodeScanner.clear().then(startScanner);
+        statusDiv.style.display = "none";
+        errorDiv.style.display = "none";
+    }
+
+    startScanner();
+</script>
+
+</body>
+</html>
