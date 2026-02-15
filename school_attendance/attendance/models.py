@@ -37,7 +37,7 @@ class Classroom(models.Model):
 
 
 class Teacher(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)  # for authentication
+    user = models.OneToOneField(User, on_delete=models.CASCADE)  
     name = models.CharField(max_length=255)
     employee_id = models.CharField(max_length=50, unique=True)
     assigned_classroom = models.ForeignKey(Classroom, on_delete=models.SET_NULL, null=True, blank=True)
