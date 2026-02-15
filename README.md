@@ -7,11 +7,11 @@ Teachers/Admins can manage students, classes, and mark daily attendance through 
 
 ## ✨ Features
 
-- Add and manage students and their details
-- Create and manage classes/sections
-- Mark daily attendance for each class
-- View attendance records by date and student
-- Django admin panel for full control of data
+- Add and manage students and their details.
+- Create and manage classes/sections.
+- Mark daily attendance for each class.
+- View attendance records by date and student.
+- Django admin panel for full control of data.
 
 > Note: Update this section if you add more features (reports, exports, etc.).
 
