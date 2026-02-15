@@ -12,7 +12,7 @@ def attendance_page(request):
     
 
 class MarkAttendanceView(APIView):
-    permission_classes = [IsAuthenticated]  # ensure user is logged in
+    permission_classes = [IsAuthenticated] 
 
     def post(self, request):
         serializer = AttendanceMarkSerializer(data=request.data, context={'request': request})
