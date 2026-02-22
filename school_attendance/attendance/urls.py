@@ -1,3 +1,4 @@
+#urls.page
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView #type:ignore
 from .views import MarkAttendanceView,attendance_page  
