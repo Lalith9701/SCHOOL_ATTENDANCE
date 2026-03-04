@@ -1,3 +1,4 @@
+#serializer page
 from rest_framework import serializers
 from .models import Attendance, Student, Teacher
 from django.utils import timezone
