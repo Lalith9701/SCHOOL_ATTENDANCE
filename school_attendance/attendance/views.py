@@ -1,3 +1,4 @@
+#views page
 from rest_framework.views import APIView
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
