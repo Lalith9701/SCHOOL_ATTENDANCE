@@ -1,3 +1,4 @@
+#asgi.page
 """
 ASGI config for school_attendance project.
 
