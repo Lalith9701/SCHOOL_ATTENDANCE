@@ -1,3 +1,4 @@
+#settings page
 """
 Django settings for school_attendance project.
 
